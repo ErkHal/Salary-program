@@ -1,16 +1,19 @@
 .mainWindow {
 
-       -fx-background-image: url("backgroundImages/chooseFileBG.jpg");
-       -fx-background-repeat: stretch;
-       -fx-background-size: 100%;
-       -fx-background-position: center center;
-       -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0);
+       -fx-background-color: #483d8b;
 
 }
 
 .appLogo {
 
-        -fx-background-color: #d02120;
-        -fx-color: #eff1f4;
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+    -fx-text-align: center;
+    -fx-color: #fff;
+    -fx-background: red;
+    -fx-padding: 7px 7px;
+    -fx-text-decoration: none;
+    -fx-width : 80px;
+    -fx-margin : auto;
 
 }

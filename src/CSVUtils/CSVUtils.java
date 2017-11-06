@@ -47,7 +47,7 @@ public class CSVUtils {
 
             String line = scanner.nextLine();
             String[] shift = line.split(valueSeparator);
-            parsedFileValues.add(shift);
+            parsedFileValues.add(calculateWorkShift(shift));
 
         }
         return combineEntries(parsedFileValues);
@@ -60,15 +60,50 @@ public class CSVUtils {
      */
     private ArrayList<String[]> combineEntries(ArrayList<String[]> parsedFile) {
 
+        ArrayList<String> employees = new ArrayList<>();
+
         ArrayList<String[]> combinedShifts = new ArrayList<>();
+
         combinedShifts.add(generateHeader());
 
         for(String[] arr : parsedFile) {
 
+            if(!employees.contains(arr[0] + "," + arr[1])) {
+                employees.add(arr[0] + "," + arr[1]);
+            }
+        }
+
+        for(String employee : employees) {
+
+            combinedShifts.add(new String[] {
+                                employee,
+                                String.valueOf(sumUpDailyTotals(parsedFile, employee))
+                                });
 
         }
 
         return combinedShifts;
+    }
+
+    /**
+     * Sums up the given employees payments from work shifts
+     * @param workShifts List of parsed CSV line values
+     * @param employee Employees name and ID concatenated and split with ','
+     * @return
+     */
+    private double sumUpDailyTotals(ArrayList<String[]> workShifts, String employee) {
+
+        double monthlyPayment = 0;
+
+        for(String[] shift : workShifts) {
+            if(employee.equals(shift[0] + "," + shift[1])) {
+                monthlyPayment += Double.parseDouble(shift[6]);
+            }
+        }
+
+        System.out.println("Total for employee " + employee + ": " + monthlyPayment);
+
+        return monthlyPayment;
     }
 
     /**
@@ -113,6 +148,7 @@ public class CSVUtils {
                 writer.close();
 
                 fileWasCreated = true;
+
             }
         return fileWasCreated;
     }

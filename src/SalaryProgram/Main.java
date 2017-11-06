@@ -12,8 +12,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("/SalaryProgram/chooseFile.fxml"));
 
-        primaryStage.setTitle("SalaryProgram");
-        Scene fileChoosingScene = new Scene(root, 500, 300);
+        primaryStage.setTitle("Salary Program");
+        primaryStage.setResizable(false);
+        Scene fileChoosingScene = new Scene(root, 700, 440);
         fileChoosingScene.getStylesheets().add("SalaryProgram/css/style.css");
         primaryStage.setScene(fileChoosingScene);
         primaryStage.show();
