@@ -3,9 +3,8 @@ package CSVUtils;
 import org.joda.time.*;
 import org.joda.time.format.DateTimeFormat;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -14,11 +13,18 @@ import java.util.Scanner;
  * A class of CSV Parsing utilities for a Salary Program
  */
 
-public class CSVUtils{
+public class CSVUtils {
+
+    private final double EVENING_COMPENSATION = 1.15;
+    private final double HOURLY_WAGE = 3.75;
+
+    private static DecimalFormat decimalFormat = new DecimalFormat("##.##");
 
     /**
      * Parses the given CSV file into String[] entries
      * where each line's values are in one String[]
+     * and then combines them into ArrayList<String[]> containing
+     * the combined work shifts into one monthly payment
      * @param csvFile File to be parsed
      * @param hasHeader If the file has a header or not
      * @return ArrayList of parsed values. Each cell contains a String array of that line's values
@@ -32,13 +38,9 @@ public class CSVUtils{
 
         Scanner scanner = new Scanner(new FileInputStream(csvFile));
 
-        if(hasHeader) {
-
-            String line = scanner.nextLine();
-            String[] header = line.split(valueSeparator);
-
-            parsedFileValues.add(header);
-
+        //Skip the header reading
+        if(hasHeader && scanner.hasNext()) {
+            scanner.nextLine();
         }
 
         while(scanner.hasNext()) {
@@ -48,31 +50,205 @@ public class CSVUtils{
             parsedFileValues.add(shift);
 
         }
-        return parsedFileValues;
+        return combineEntries(parsedFileValues);
     }
 
     /**
-     * Calculates the duration of a workshift
+     * Combines all workshifts of one person into one total monthly payment
+     * @param parsedFile
+     * @return
+     */
+    private ArrayList<String[]> combineEntries(ArrayList<String[]> parsedFile) {
+
+        ArrayList<String[]> combinedShifts = new ArrayList<>();
+        combinedShifts.add(generateHeader());
+
+        for(String[] arr : parsedFile) {
+
+
+        }
+
+        return combinedShifts;
+    }
+
+    /**
+     * Generates a header for a combineEntries ArrayList
+     * @return Header
+     */
+    private String[] generateHeader() {
+
+        return new String[] {
+
+                "Person Name",
+                "Person ID",
+                "Monthly payment",
+
+        };
+    }
+
+
+    /**
+     * Converts given ArrayList into Comma Separated Values (CSV) file
+     * @param filePath
+     * @param arrayList
+     */
+    public boolean intoCSVFile(String filePath, ArrayList<String[]> arrayList) throws IOException {
+
+        boolean fileWasCreated = false;
+
+            File monthlyPayments = new File(filePath);
+            if (monthlyPayments.createNewFile()) {
+
+                //Create a writer for the file
+                FileWriter writer = new FileWriter(monthlyPayments);
+
+                for (String[] arr : arrayList) {
+                    //Concatenate values of one line with delimiter between values
+                    String oneLine = String.join(",", arr);
+                    System.out.println(oneLine);
+                    writer.write(oneLine + "\n");
+                }
+
+                writer.flush();
+                writer.close();
+
+                fileWasCreated = true;
+            }
+        return fileWasCreated;
+    }
+
+    /**
+     * Calculates the duration and wages of a workshift
      * @param shiftEntry Shift entry containing one workshift(= one line from the CSV file)
      * @return The duration of the workshift. [0] is hours and [1] is minutes
+     * Values returned in array indexes:
+     *      0           1               2               3                   4                       5                       6
+     * Person Name, Person ID, Workshift Duration, Regular wage, Evening Work Compensation, Overtime Compensation, Total Daily Pay
      */
-    public String[] calculateWorkShift(String[] shiftEntry) {
+    private String[] calculateWorkShift(String[] shiftEntry) {
 
         DateTime[] times = convertToDateTime(shiftEntry);
 
-        int eveningWorkHours = 0;
+        double regWage = 0;
+        double eveningCompensation = 0;
+        double overtimeCompensation = 0;
+        double totalDailyWage = 0;
 
+        Duration temp = new Duration(times[0], times[1]);
+        Period shiftDuration = temp.toPeriod();
+
+        //Calculate overtime compensation if shiftDuration > 8
+        int regularHours = shiftDuration.getHours();
+        if(regularHours > 8) {
+            regularHours = regularHours - 8;
+            overtimeCompensation = calculateOvertimeCompensation(shiftDuration.getHours() - 8, shiftDuration.getMinutes());
+            regWage = calculateRegDailyWage(regularHours, 0);
+        } else {
+            regWage = calculateRegDailyWage(regularHours, shiftDuration.getMinutes());
+        }
+
+        //Calculate the evening hours for a workshift
+        int eveningWorkHours = 0;
         for(DateTime count = times[0]; times[1].isAfter(count); count = count.plusHours(1)) {
 
-            if(count.getHourOfDay() >=18 || count.getHourOfDay() <= 6) {
+            if(count.getHourOfDay() > 18 || count.getHourOfDay() < 6) {
                 eveningWorkHours++;
             }
         }
 
-        //Duration temp = new Duration(times[0], times[1]);
-        //Period shiftDuration = temp.toPeriod();
+        //Calculate the evening work compensation if evening work hours > 0
+        if(eveningWorkHours > 0) {
+           eveningCompensation = calculateEveningCompensation(eveningWorkHours, EVENING_COMPENSATION);
+        }
 
-        return new String[] {""+eveningWorkHours};
+        //Finally calculate the total daily wage
+        totalDailyWage = calculateTotalDailyPay(regWage, eveningCompensation, overtimeCompensation);
+
+        //Construct a new entry with calculated wages and additional information about the workshift
+        String[] calculatedEntry = {
+                shiftEntry[0],
+                shiftEntry[1],
+                String.valueOf(shiftDuration.getHours() + ":" + shiftDuration.getMinutes()),
+                String.valueOf(decimalFormat.format(regWage)),
+                String.valueOf(decimalFormat.format(eveningCompensation)),
+                String.valueOf(decimalFormat.format(overtimeCompensation)),
+                String.valueOf(decimalFormat.format(totalDailyWage))
+            };
+
+        return calculatedEntry;
+    }
+
+    /**
+     * Calculates evening work compensation according to given compensation amount.
+     * @param eveningWorkHours Amount of evening work hours
+     * @return Evening compensation
+     */
+    private double calculateEveningCompensation(int eveningWorkHours, double compensation) {
+
+        return eveningWorkHours * compensation;
+
+    }
+
+    /**
+     * Calculates the daily total pay.
+     * Total daily pay comprises of Regular wage and possible evening and overtime compensation
+     * @param regWage
+     * @param eveningCompensation
+     * @param overtimeCompensation
+     * @return
+     */
+    private double calculateTotalDailyPay(double regWage, double eveningCompensation, double overtimeCompensation) {
+
+        return (regWage + eveningCompensation + overtimeCompensation);
+    }
+
+    /**
+     * Calculates the regular daily wage of one entry
+     * @param hours regular working hours
+     * @param minutes minutes remaining
+     * @return Regular wage to be paid
+     */
+    private double calculateRegDailyWage(int hours, int minutes) {
+
+        double fullHoursWage = hours * 3.75;
+
+        double remainingMinutesWage = 0;
+
+        if(minutes > 0) {
+
+            //Somehow this stuff didn't work unless put into separate variables
+            double temp = (double)minutes / 60;
+            remainingMinutesWage = temp * 3.75;
+        }
+
+        return (fullHoursWage + remainingMinutesWage);
+    }
+
+    /**
+     * Calculates overtime compensation given the hours and minutes of overtime
+     * @param hours
+     * @param minutes
+     * @return Overtime compensation to be paid according to rates
+     */
+    private double calculateOvertimeCompensation(int hours, int minutes) {
+
+        double totalCompensation = 0;
+
+        for(int i = 0; i <= hours; i++) {
+            if(i <= 2) {
+                totalCompensation += (HOURLY_WAGE * 1.25);
+            }
+
+            if(i <= 4 && i > 2) {
+                totalCompensation += (HOURLY_WAGE * 1.50);
+            }
+
+            if(i >= 5) {
+                totalCompensation += (HOURLY_WAGE * 2);
+            }
+        }
+
+        return totalCompensation;
     }
 
     /**
@@ -85,10 +261,11 @@ public class CSVUtils{
 
         DateTime[] shiftTimes = new DateTime[2];
 
+        //Concatenate two CSV values to get the work shift start and end
         String startDateAndTime = values[2] + "." + values[3];
         String endDateAndTime = values[2] + "." + values[4];
 
-        //Initialize the formatter for the entries
+        //Initialize the formatter for the time strings
         org.joda.time.format.DateTimeFormatter format;
         format = DateTimeFormat.forPattern("dd.MM.yyyy.HH:mm");
 
@@ -102,38 +279,7 @@ public class CSVUtils{
         shiftTimes[0] = startTime;
         shiftTimes[1] = endTime;
 
-        //System.out.println(format.print(shiftTimes[0]) + "|" + format.print(shiftTimes[1]));
-
         return shiftTimes;
 
     }
-
-    /*private double calculateTotalDailyPay(int[] regHoursAndMinutes, int eveningHours) {
-
-        double regDailyWage = calculateRegDailyWage(regHoursAndMinutes);
-
-    } */
-
-    public double calculateRegDailyWage(int[] hoursAndMinutes) {
-
-        double fullHoursWage = hoursAndMinutes[0] * 3.75;
-        System.out.println(fullHoursWage);
-
-        double remainingMinutesWage = 0;
-
-        if(hoursAndMinutes[1] > 0) {
-
-            //Somehow this stuff didn't work unless put into separate variables
-            double temp = hoursAndMinutes[1];
-            double temp2 = temp / 60;
-            remainingMinutesWage = temp2 * 3.75;
-        }
-
-        System.out.println("¤¤¤¤ " + remainingMinutesWage);
-
-        double asd = fullHoursWage + remainingMinutesWage;
-
-        return fullHoursWage + remainingMinutesWage;
-    }
-
 }
