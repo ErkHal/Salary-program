@@ -2,6 +2,7 @@ package CSVUtils;
 
 import org.joda.time.*;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -9,8 +10,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Author Erkki Halinen
- * A class of CSV Parsing utilities for a Salary Program
+ * @author  Erkki Halinen
+ * Model class of CSV Parsing utilities for a Salary Program.
+ * Includes methods to parse the given CSV file and perform calculations based on given standard wages and compensations.
  */
 
 public class CSVUtils {
@@ -35,6 +37,7 @@ public class CSVUtils {
         String valueSeparator = ""+separator;
 
         ArrayList<String[]> parsedFileValues = new ArrayList<>();
+        String monthAndYear = null;
 
         Scanner scanner = new Scanner(new FileInputStream(csvFile));
 
@@ -43,14 +46,22 @@ public class CSVUtils {
             scanner.nextLine();
         }
 
+        //This is for checking if a first shift has been already iterated and month and year retrieved
+        boolean first = true;
+
         while(scanner.hasNext()) {
 
             String line = scanner.nextLine();
             String[] shift = line.split(valueSeparator);
+
+            if(first) {
+                monthAndYear = getMonthAndYear(shift);
+            }
+
             parsedFileValues.add(calculateWorkShift(shift));
 
         }
-        return combineEntries(parsedFileValues);
+        return combineEntries(parsedFileValues, monthAndYear);
     }
 
     /**
@@ -58,12 +69,13 @@ public class CSVUtils {
      * @param parsedFile
      * @return
      */
-    private ArrayList<String[]> combineEntries(ArrayList<String[]> parsedFile) {
+    private ArrayList<String[]> combineEntries(ArrayList<String[]> parsedFile, String monthAndYear) {
 
         ArrayList<String> employees = new ArrayList<>();
 
         ArrayList<String[]> combinedShifts = new ArrayList<>();
 
+        combinedShifts.add(generateTimeStamp(monthAndYear));
         combinedShifts.add(generateHeader());
 
         for(String[] arr : parsedFile) {
@@ -107,6 +119,21 @@ public class CSVUtils {
     }
 
     /**
+     * Generates a timestamp header for a combineEntries ArrayList.
+     * Essentially adds a timestamp into the begin of the file identifying the
+     * month and year of the currently generated payment list.
+     * @return Header
+     */
+    private String[] generateTimeStamp(String monthAndYear) {
+
+        return new String[] {
+
+                "Monthly payment list ",
+                monthAndYear
+        };
+    }
+
+    /**
      * Generates a header for a combineEntries ArrayList
      * @return Header
      */
@@ -140,7 +167,7 @@ public class CSVUtils {
                 for (String[] arr : arrayList) {
                     //Concatenate values of one line with delimiter between values
                     String oneLine = String.join(",", arr);
-                    System.out.println(oneLine);
+                    //System.out.println(oneLine);
                     writer.write(oneLine + "\n");
                 }
 
@@ -317,5 +344,24 @@ public class CSVUtils {
 
         return shiftTimes;
 
+    }
+
+    /**
+     * Retrieve month and year of first shiftentry from the worklist being parsed.
+     */
+    private String getMonthAndYear(String[] firstEntry) {
+
+        //Concatenate two CSV values to get the work shift start and end
+        String startDateAndTime = firstEntry[2] + "." + firstEntry[3];
+
+        //Initialize the formatter for the time strings
+        DateTimeFormatter format;
+        format = DateTimeFormat.forPattern("dd.MM.yyyy.HH:mm");
+
+        DateTime startTime = DateTime.parse(startDateAndTime, format);
+
+        String monthAndYear = startTime.getMonthOfYear() + "." + startTime.getYear();
+
+        return monthAndYear;
     }
 }

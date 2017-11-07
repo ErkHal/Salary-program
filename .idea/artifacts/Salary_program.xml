@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="Salary-program">
+    <output-path>$PROJECT_DIR$/out/artifacts/Salary_program</output-path>
+    <root id="root">
+      <element id="archive" name="Salary_program.jar">
+        <element id="module-output" name="Salary-program" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/../META-INF/MANIFEST.MF" />
+      </element>
+      <element id="file-copy" path="D:/SDK's and Libraries/joda-time-2.4/joda-time-2.4.jar" />
+      <element id="file-copy" path="D:/SDK's and Libraries/joda-time-2.4/joda-time-2.4-javadoc.jar" />
+      <element id="file-copy" path="D:/SDK's and Libraries/joda-time-2.4/joda-time-2.4-sources.jar" />
+    </root>
+  </artifact>
+</component>

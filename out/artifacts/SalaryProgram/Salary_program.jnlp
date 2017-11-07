@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="Salary_program.jnlp">
+  <information>
+    <title>Salary Program</title>
+    <vendor>ErkHal</vendor>
+    <description>Takes specially formatted CSV workshift lists, parses them and outputs a monthly payment list in CSV file type.</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="Salary_program.jar" size="66818" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="600" height="400" main-class="SalaryProgram.Main"  name="SalaryProgram" />
+  <update check="background"/>
+</jnlp>

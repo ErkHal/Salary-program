@@ -10,10 +10,23 @@
     -fx-font-style: italic;
     -fx-text-align: center;
     -fx-color: #fff;
-    -fx-background: red;
+    -fx-background-color: red;
     -fx-padding: 7px 7px;
     -fx-text-decoration: none;
     -fx-width : 80px;
     -fx-margin : auto;
 
+}
+
+.directoryField {
+
+    -fx-background: #bec0c4;
+
+}
+
+.message {
+
+     -fx-font-weight: bold;
+     -fx-font-style: italic;
+     -fx-text-align: center;
 }

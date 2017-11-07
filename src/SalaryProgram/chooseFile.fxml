@@ -8,9 +8,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<GridPane alignment="center" hgap="10" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-          prefHeight="300.0" prefWidth="500.0" stylesheets="@css/style.css" vgap="10" xmlns="http://javafx.com/javafx/8.0.121"
-          xmlns:fx="http://javafx.com/fxml/1" fx:controller="SalaryProgram.ChooseFileController">
+<GridPane alignment="center" hgap="10" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" stylesheets="@css/style.css" vgap="10" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SalaryProgram.ChooseFileController">
    <columnConstraints>
       <ColumnConstraints />
    </columnConstraints>
@@ -18,26 +16,24 @@
       <RowConstraints />
    </rowConstraints>
    <children>
-      <Pane id="chooseFileWindow" focusTraversable="true" maxHeight="-Infinity"
-            maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="440.0" prefWidth="700.0" styleClass="mainWindow" stylesheets="@css/style.css">
+      <Pane id="chooseFileWindow" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="459.0" prefWidth="728.0" styleClass="mainWindow" stylesheets="@css/style.css">
          <children>
-            <Button id="chooseFileButton" fx:id="chooseFileButton" layoutX="289.0" layoutY="320.0"
-                    mnemonicParsing="false" onAction="#selectFile" text="Choose file..." textAlignment="CENTER" />
-            <Text fill="#282727" layoutX="168.0" layoutY="71.0" stroke="#111111" strokeType="OUTSIDE"
-                  strokeWidth="0.0" styleClass="appLogo" text="Salary Program" textAlignment="CENTER"
-                  wrappingWidth="323.01171875">
+            <Button id="chooseFileButton" fx:id="chooseFileButton" layoutX="350.0" layoutY="198.0" mnemonicParsing="false" onAction="#selectFile" text="Choose file..." textAlignment="CENTER" />
+            <Text fill="#282727" layoutX="168.0" layoutY="71.0" stroke="#111111" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="appLogo" text="Salary Program" textAlignment="CENTER" wrappingWidth="323.01171875">
                <font>
                   <Font name="Arial" size="36.0" />
                </font>
             </Text>
-            <Text id="filepath" fx:id="filepath" layoutX="159.0" layoutY="167.0" strokeType="OUTSIDE"
-                  strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="382.0"
-            />
-            <Button fx:id="okayButton" disable="true" layoutX="608.0" layoutY="368.0" mnemonicParsing="false"
-                    onAction="#parseAndCalculateWorkShiftList" prefHeight="25.0"
-                    prefWidth="60.0" text="Next" textAlignment="CENTER"
-            />
+            <Text id="filepath" fx:id="selectedFilepath" fill="#252424" layoutX="51.0" layoutY="215.0" stroke="#d0cbcb" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="directoryField" text="Choose .CSV file...." wrappingWidth="299.0" />
+            <Button fx:id="convertButton" disable="true" layoutX="538.0" layoutY="212.0" mnemonicParsing="false" onAction="#parseAndCalculateWorkShiftList" prefHeight="51.0" prefWidth="108.0" text="Convert" textAlignment="CENTER" />
+            <Button cancelButton="true" layoutX="646.0" layoutY="369.0" mnemonicParsing="false" onAction="#exitProgram" text="Quit" textOverrun="CLIP" />
+            <Button fx:id="saveButton" disable="true" layoutX="350.0" layoutY="262.0" mnemonicParsing="false" onAction="#saveNewFile" prefHeight="25.0" prefWidth="83.0" text="Save file to..." />
+            <Text fx:id="saveFilepath" fill="#252424" layoutX="51.0" layoutY="279.0" stroke="#d0cbcb" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="directoryField" text="Choose save file directory...." wrappingWidth="298.99997675418854" />
+            <Text fx:id="message" fill="#282727" layoutX="245.0" layoutY="111.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="message" wrappingWidth="292.13671875">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Text>
          </children>
       </Pane>
    </children>

@@ -1,0 +1,32 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="SalaryProgram">
+    <output-path>$PROJECT_DIR$/out/artifacts/SalaryProgram</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="alias" value="ERKKI" />
+        <option name="appClass" value="SalaryProgram.Main" />
+        <option name="convertCss2Bin" value="true" />
+        <option name="description" value="Takes specially formatted CSV workshift lists, parses them and outputs a monthly payment list in CSV file type." />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="icons">
+          <JavaFxApplicationIcons>
+            <option name="linuxIcon" value="$PROJECT_DIR$/src/icon/Coins_#e0d621_128px.png" />
+          </JavaFxApplicationIcons>
+        </option>
+        <option name="keystore" value="" />
+        <option name="nativeBundle" value="exe" />
+        <option name="title" value="Salary Program" />
+        <option name="vendor" value="ErkHal" />
+        <option name="version" value="1.0" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="Salary_program.jar">
+        <element id="module-output" name="Salary-program" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/out/META-INF/MANIFEST.MF" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
